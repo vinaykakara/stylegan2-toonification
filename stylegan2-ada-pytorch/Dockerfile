@@ -13,10 +13,17 @@ ENV PYTHONUNBUFFERED 1
 
 RUN pip install imageio-ffmpeg==0.4.3 pyspng==0.1.0
 
-WORKDIR /workspace
+RUN apt-get update
 
-# Unset TORCH_CUDA_ARCH_LIST and exec.  This makes pytorch run-time
-# extension builds significantly faster as we only compile for the
-# currently active GPU configuration.
-RUN (printf '#!/bin/bash\nunset TORCH_CUDA_ARCH_LIST\nexec \"$@\"\n' >> /entry.sh) && chmod a+x /entry.sh
-ENTRYPOINT ["/entry.sh"]
+RUN useradd vinay
+
+COPY --chown=vinay . /home/vinay/code/
+
+RUN chown -R vinay:vinay /home/vinay/
+
+USER vinay
+
+#RUN cd /home/vinay/code/ && pip3 install -r requirements.txt
+
+WORKDIR /home/vinay/code/
+
